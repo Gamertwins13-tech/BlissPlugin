@@ -10,11 +10,9 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.plugin.java.JavaPlugin;
-
 import java.util.*;
 
 public class BlissPlugin extends JavaPlugin implements Listener, CommandExecutor {
-
     private final Map<UUID, AbilityType> playerAbilities = new HashMap<>();
 
     @Override
@@ -29,9 +27,7 @@ public class BlissPlugin extends JavaPlugin implements Listener, CommandExecutor
         Player player = event.getPlayer();
         if (player.isSneaking() && (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)) {
             AbilityType ability = playerAbilities.get(player.getUniqueId());
-            if (ability != null) {
-                ability.execute(player);
-            }
+            if (ability != null) ability.execute(player);
         }
     }
 
@@ -39,7 +35,6 @@ public class BlissPlugin extends JavaPlugin implements Listener, CommandExecutor
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!(sender instanceof Player)) return true;
         Player p = (Player) sender;
-
         if (command.getName().equalsIgnoreCase("resetability")) {
             AbilityType[] values = AbilityType.values();
             AbilityType random = values[new Random().nextInt(values.length)];
@@ -48,16 +43,6 @@ public class BlissPlugin extends JavaPlugin implements Listener, CommandExecutor
         } else if (command.getName().equalsIgnoreCase("abilityinfo")) {
             AbilityType ability = playerAbilities.get(p.getUniqueId());
             p.sendMessage(ability != null ? ChatColor.YELLOW + ability.getName() + ": " + ChatColor.WHITE + ability.getDescription() : "No ability.");
-        }
-        return true;
-    }
-}
-
-        if (command.getName().equalsIgnoreCase("resetability")) {
-            List<String> keys = new ArrayList<>(registry.keySet());
-            String random = keys.get(new Random().nextInt(keys.size()));
-            playerAbilities.put(player.getUniqueId(), random);
-            player.sendMessage(ChatColor.GREEN + "You have been assigned: " + random);
         }
         return true;
     }
