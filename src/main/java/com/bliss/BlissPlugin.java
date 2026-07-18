@@ -15,44 +15,43 @@ import java.util.*;
 
 public class BlissPlugin extends JavaPlugin implements Listener, CommandExecutor {
 
-    // Registry for your abilities
-    private final Map<String, Ability> registry = new HashMap<>();
-    private final Map<UUID, String> playerAbilities = new HashMap<>();
+    private final Map<UUID, AbilityType> playerAbilities = new HashMap<>();
 
     @Override
     public void onEnable() {
         getServer().getPluginManager().registerEvents(this, this);
         getCommand("resetability").setExecutor(this);
         getCommand("abilityinfo").setExecutor(this);
-        
-        // Register your abilities here
-        registerAbility("Fireball", new FireballAbility());
-        registerAbility("SuperJump", new SuperJumpAbility());
-        // Register all 30 here...
-        
-        getLogger().info("BlissPlugin System Initialized with " + registry.size() + " abilities.");
-    }
-
-    private void registerAbility(String name, Ability ability) {
-        registry.put(name.toLowerCase(), ability);
     }
 
     @EventHandler
     public void onShiftRightClick(PlayerInteractEvent event) {
         Player player = event.getPlayer();
         if (player.isSneaking() && (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)) {
-            String abilityName = playerAbilities.get(player.getUniqueId());
-            if (abilityName != null && registry.containsKey(abilityName.toLowerCase())) {
-                registry.get(abilityName.toLowerCase()).execute(player);
+            AbilityType ability = playerAbilities.get(player.getUniqueId());
+            if (ability != null) {
+                ability.execute(player);
             }
         }
     }
 
-    // Commands to reset and view
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!(sender instanceof Player)) return true;
-        Player player = (Player) sender;
+        Player p = (Player) sender;
+
+        if (command.getName().equalsIgnoreCase("resetability")) {
+            AbilityType[] values = AbilityType.values();
+            AbilityType random = values[new Random().nextInt(values.length)];
+            playerAbilities.put(p.getUniqueId(), random);
+            p.sendMessage(ChatColor.GREEN + "New ability: " + random.getName());
+        } else if (command.getName().equalsIgnoreCase("abilityinfo")) {
+            AbilityType ability = playerAbilities.get(p.getUniqueId());
+            p.sendMessage(ability != null ? ChatColor.YELLOW + ability.getName() + ": " + ChatColor.WHITE + ability.getDescription() : "No ability.");
+        }
+        return true;
+    }
+}
 
         if (command.getName().equalsIgnoreCase("resetability")) {
             List<String> keys = new ArrayList<>(registry.keySet());
