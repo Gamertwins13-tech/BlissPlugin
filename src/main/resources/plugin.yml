@@ -1,11 +1,9 @@
-name: BlissPlugin
-version: 1.0
+name: GamerPlugin
+version: 2.7
 main: com.bliss.BlissPlugin
 api-version: '1.21'
 commands:
   resetability:
-    description: Get a new random ability
     usage: /resetability
   abilityinfo:
-    description: See what your ability does
     usage: /abilityinfo
